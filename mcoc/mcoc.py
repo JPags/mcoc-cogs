@@ -136,9 +136,10 @@ class_color_codes = {
         'Cosmic': discord.Color(0x2799f7), 'Tech': discord.Color(0x0033ff),
         'Mutant': discord.Color(0xffd400), 'Skill': discord.Color(0xdb1200),
         'Science': discord.Color(0x0b8c13), 'Mystic': discord.Color(0x7f0da8),
-        'All': discord.Color(0xffffff), 'default': discord.Color.light_grey(),
+        'All': discord.Color(0x03f193), 'Superior': discord.Color(0x03f193), 'default': discord.Color.light_grey(),
         }
 class_emoji = {
+        'Superior':'<:all2:339511715920084993>',
         'All':'<:all2:339511715920084993>',
         'Cosmic':'<:cosmic2:339511716104896512>',
         'Tech':'<:tech2:339511716197171200>',
@@ -2679,7 +2680,12 @@ class Champion:
                 break
 
         if title is None:
-            raise TitleError("'{}' title not found".format(mcocsig)) #, mcocsig)
+            if mcocsig == 'SYMS':
+                title = 'ID_UI_STAT_SIGNATURE_SYMS'
+            elif mcocsig == 'MLS':
+                title = 'ID_UI_STAT_SIGNATURE_MLS'
+            else:
+                raise TitleError("'{}' title not found".format(mcocsig)) #, mcocsig)
 
         if self.mcocsig == 'COMICULTRON':
             mcocsig = self.mcocsig  # re-init for Ultron Classic
@@ -2697,14 +2703,15 @@ class Champion:
             )
 
         for x in preambles:
-            if x + '_SHORT' in sigs: #replacing _SIMPLE as the test for preamble
+            if x + '_SHORT' in sigs or x + '_SIMPLE' in sigs or x + '_TITLE_SIMPLE': #replacing _SIMPLE as the test for preamble
                 preamble = x
                 #print('SIG PREAMBLE is : ' + x)
                 break
         if preamble is None and mcocsig == 'BISH':
             preamble = 'ID_STAT_BISH_SIG'
         elif preamble is None:
-            raise TitleError("'{}' preamble not found".format(mcocsig))
+            raise TitleError("\n'{}' preamble not found".format(mcocsig))
+
         if preamble + '_SIMPLE_NEW2' in sigs:
             simple = preamble + '_SIMPLE_NEW2'
         if preamble + '_SIMPLE_NEW' in sigs:
@@ -2726,6 +2733,11 @@ class Champion:
             desc.append('ID_UI_STAT_FORMAT_EMMA_SIG_DF')
         elif mcocsig in champ_exceptions:
             desc.extend(champ_exceptions[mcocsig])
+        elif preamble + '_DESC_A_NEW' in sigs: #carnage
+            desc.append('_DESC_A_NEW')
+        elif preamble + '_A' in sigs and preamble + '_B' in sigs: #venom improvement
+            desc.append('_A')
+            desc.append('_B')
         elif preamble + '_DESC_NEW' in sigs:
             desclist = ('_DESC_NEW','_DESC_NEW_B')
             if preamble + '_DESC_NEW2' in sigs:
@@ -2740,9 +2752,6 @@ class Champion:
                         desc.append(preamble + k)
         elif preamble + '_5STAR_DESC_MOD' in sigs:
             desc.append(preamble+'_DESC_MOD')
-        # elif mcocsig == 'CARNAGE':  #CARNAGE improvement
-        #     desc.append(preamble+'_DESC_A_NEW')
-        #     desc.append(preamble+'_DESC_B')
         else:
             for k in ('_DESC','_DESC_A','_DESC_B','_DESC_C','_DESC_D',
                       '_DESC_E','_DESC_F','_DESC_G',
